@@ -1,0 +1,12 @@
+[package]
+name = "one_tui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+oauth2 = "4.4.2"
+anyhow = "1.0.93"
+dotenv = "0.15.0"
+reqwest = { version = "0.12.9", features = ["blocking"] }
+url = "2.5.3"
+
