@@ -1,53 +1,67 @@
 use oauth2::{
-    basic::BasicClient, reqwest::http_client, RefreshToken , TokenResponse,
+    basic::BasicClient, reqwest::http_client, RefreshToken, TokenResponse,
 };
-use std::{fs,io};
-pub fn read_refresh_token(client: &BasicClient) -> String {
-    if !fs::metadata("refresh_token.txt").is_ok(){
-        initialize_auth(&client);
-    }
-    std::fs::read_to_string("refresh_token.txt").expect("unable to read refresh token")
+use std::{fs, io, error::Error};
+
+pub fn read_refresh_token() -> Result<String, io::Error> {
+    // Instead of checking with metadata, directly try reading
+    fs::read_to_string("refresh_token.txt")
 }
 
-pub fn write_refresh_token(refresh_token: &str) -> io::Result<()>{
+pub fn write_refresh_token(refresh_token: &str) -> io::Result<()> {
     fs::write("refresh_token.txt", refresh_token)?;
     Ok(())
 }
-pub fn get_access_token_from_rt(client: &BasicClient) -> String{
-    let refresh_token = read_refresh_token(&client);
 
-    let token_result = client.exchange_refresh_token(&RefreshToken::new(refresh_token)).request(http_client).expect("unable to request token(RT expired)");
+pub fn get_access_token_from_rt(client: &BasicClient) -> Result<String, Box<dyn Error>> {
+    let refresh_token = match read_refresh_token() {
+        Ok(token) => token,
+        Err(_) => {
+            // If refresh token is not found, initialize the auth process
+            initialize_auth(client)?;
+            read_refresh_token()? // Retry reading after auth
+        }
+    };
+
+    let token_result = client
+        .exchange_refresh_token(&RefreshToken::new(refresh_token))
+        .request(http_client)
+        .map_err(|e| format!("unable to request token: {}", e))?;
+
     println!("token expires in {:?}", token_result.expires_in().unwrap());
-    token_result.access_token().secret().to_string()
+    Ok(token_result.access_token().secret().to_string())
 }
 
-pub fn initialize_auth(client : &BasicClient) -> String{
+pub fn initialize_auth(client: &BasicClient) -> Result<(), Box<dyn Error>> {
     let (pkce_challenge, pkce_verifier) = oauth2::PkceCodeChallenge::new_random_sha256();
-    let (auth_url, csrf_token) = client
+    let (auth_url, _) = client
         .authorize_url(oauth2::CsrfToken::new_random)
         .add_scope(oauth2::Scope::new("files.read".to_string()))
         .add_scope(oauth2::Scope::new("offline_access".to_string()))
         .set_pkce_challenge(pkce_challenge)
         .url();
-    let mut auth_code = String::new();
-    println!("go to {}", auth_url.to_string());
 
-    println!("enter the code: ");
+    println!("Go to the following URL to authorize: {}", auth_url);
+    println!("Enter the authorization code:");
+
+    let mut auth_code = String::new();
     io::stdin()
         .read_line(&mut auth_code)
-        .expect("failed to real line");
+        .map_err(|e| format!("failed to read line: {}", e))?;
 
     let token_result = client
-        .exchange_code(oauth2::AuthorizationCode::new(auth_code))
+        .exchange_code(oauth2::AuthorizationCode::new(auth_code.trim().to_string()))
         .set_pkce_verifier(pkce_verifier)
         .request(http_client)
-        .expect("unable to request token");
+        .map_err(|e| format!("unable to exchange authorization code: {}", e))?;
 
-    //println!("token result: {:#?}", token_result);
-    //let access_token = token_result.access_token().secret().to_string();
-    let refresh_token = token_result.refresh_token().unwrap().secret().to_string();
+    let refresh_token = token_result
+        .refresh_token()
+        .ok_or("no refresh token found")?
+        .secret()
+        .to_string();
 
-    let token_expiry = format!("token expires in {:?}", token_result.expires_in().unwrap());
-    write_refresh_token(&refresh_token).expect("unable to write refresh token");
-    token_expiry
+    write_refresh_token(&refresh_token)?;
+
+    Ok(())
 }

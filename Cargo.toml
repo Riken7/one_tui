@@ -5,8 +5,11 @@ edition = "2021"
 
 [dependencies]
 oauth2 = "4.4.2"
-anyhow = "1.0.93"
 dotenv = "0.15.0"
-reqwest = { version = "0.12.9", features = ["blocking"] }
+reqwest = { version = "0.12.9", features = ["blocking" , "json"]}
+serde = { version = "1.0.130", features = ["derive"]}
 url = "2.5.3"
-
+ratatui = "0.29"
+crossterm = "0.25"
+tokio = "1.41.1"
+chrono = "0.4.38"
