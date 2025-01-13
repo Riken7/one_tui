@@ -7,9 +7,17 @@ edition = "2021"
 oauth2 = "4.4.2"
 dotenv = "0.15.0"
 reqwest = { version = "0.12.9", features = ["blocking" , "json"]}
-serde = { version = "1.0.130", features = ["derive"]}
+serde = { version = "1.0.217", features = ["derive"]}
+serde_json = "1.0.68"
 url = "2.5.3"
 ratatui = "0.29"
 crossterm = "0.25"
-tokio = "1.41.1"
+tokio = { version = "1.41.1" , features = ["full"]}
 chrono = "0.4.38"
+futures = "0.3.31"
+material-icons = "0.2.0"
+dirs-next = "2.0.0"
+nerd-font-symbols = "0.2.0"
+toml = "0.8.19"
+native-dialog = "0.7.0"
+tiny_http = "0.12.0"
