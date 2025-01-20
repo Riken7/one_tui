@@ -1,0 +1,27 @@
+name : Release
+
+on: 
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          override-file: rust-toolchain
+      - uses: cargo build --release
+
+      - name: Release binary
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          files: target/release/one_tui
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
