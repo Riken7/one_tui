@@ -1,6 +1,7 @@
 # one-tui
 
 A terminal client for OneDrive, built in Rust.
+![one_tui screenshot]![Screenshot from 2025-01-20 10-57-57 1920x1080](https://github.com/user-attachments/assets/fe6db6f5-eff3-45ef-95cf-bd6f9c1454ec)
 
 > [!WARNING]  
 > `one_tui` is in early development! Expect horrible bugs and unexpected behavior.
@@ -11,7 +12,7 @@ A terminal client for OneDrive, built in Rust.
 
 ## Prerequisites
 
-To use `OneTUI`, you need to have the following installed:
+To use `one_tui`, you need to have the following installed:
 
 1. **Rust**: [Install Rust](https://www.rust-lang.org/tools/install)
 2. **Zenity/Kdialog**: for file picker support
