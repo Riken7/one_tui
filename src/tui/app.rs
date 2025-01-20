@@ -340,13 +340,16 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                                     {
                                         let id = index.selected().unwrap();
                                         let access_token = access_token.clone();
-                                        let mut folder_id = new_folder[id].clone().id;
-                                        let mut file_name = new_folder[id].clone().name;
-                                        let dest = selected_path.clone();
-                                        if flag == 0 {
+                                        let folder_id;
+                                        let file_name;
+                                        if flag != 0 {
+                                            folder_id = new_folder[id].clone().id;
+                                            file_name = new_folder[id].clone().name;
+                                        }else {
                                             folder_id = folder[id].clone().id;
                                             file_name = folder[id].clone().name;
                                         }
+                                        let dest = selected_path.clone();
 
                                         let new_dl = Arc::clone(&download_list);
                                         {
@@ -458,10 +461,9 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                                             continue;
                                         }
                                         Err(_e) => {
-                                            message_list
-                                                .lock()
-                                                .unwrap()
-                                                .push(format!("download zenity/kdialog for file dialog"));
+                                            message_list.lock().unwrap().push(format!(
+                                                "download zenity/kdialog for file dialog"
+                                            ));
                                             continue;
                                         }
                                     };
