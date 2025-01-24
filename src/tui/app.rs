@@ -203,6 +203,11 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                     }
                 } else {
                     match key.code {
+                        KeyCode::Esc => {
+                            if pop{
+                                pop = false
+                            }
+                        }
                         KeyCode::Char('c') => {
                             if key.modifiers == KeyModifiers::CONTROL {
                                 break;
@@ -210,6 +215,13 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                         }
                         KeyCode::Char('j') => {
                             if !pop {
+                                if index.selected().is_none() {
+                                    if (flag == 0 && !folder.is_empty())
+                                        || (flag == 1 && !new_folder.is_empty())
+                                    {
+                                        index.select(Some(0));
+                                    }
+                                }
                                 if let Some(i) = index.selected() {
                                     if (flag == 0 && i < folder.len() - 1)
                                         || (flag == 1 && i < new_folder.len() - 1)
@@ -345,7 +357,7 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                                         if flag != 0 {
                                             folder_id = new_folder[id].clone().id;
                                             file_name = new_folder[id].clone().name;
-                                        }else {
+                                        } else {
                                             folder_id = folder[id].clone().id;
                                             file_name = folder[id].clone().name;
                                         }

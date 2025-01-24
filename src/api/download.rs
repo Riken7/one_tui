@@ -59,7 +59,7 @@ pub async fn download_file(
 ) -> Result<(), Box<dyn Error>> {
     if !Path::new(&download_path).exists(){
         create_dir_all(&download_path)?;
-        println!("Created directory: {}", download_path);
+        //println!("Created directory: {}", download_path);
     }
     let client = Client::new();
     let url = format!(
