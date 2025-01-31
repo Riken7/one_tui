@@ -19,7 +19,6 @@ use ratatui::prelude::CrosstermBackend;
 use ratatui::widgets::ListState;
 use ratatui::Terminal;
 use std::{
-    env::consts::OS,
     io::{stdout, Write},
     sync::{Arc, Mutex},
     time::Duration,
@@ -204,7 +203,7 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                 } else {
                     match key.code {
                         KeyCode::Esc => {
-                            if pop{
+                            if pop {
                                 pop = false
                             }
                         }
@@ -259,9 +258,7 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                             folder_name.clear();
                         }
                         KeyCode::Char('r') => {
-                            if (OS == "macos" && key.modifiers == KeyModifiers::ALT)
-                                || (OS == "linux" && key.modifiers == KeyModifiers::CONTROL)
-                            {
+                            if key.modifiers == KeyModifiers::CONTROL {
                                 (folder, meta) = refetch_folder::refresh_list(&access_token, None);
                                 (new_folder, new_meta) = refetch_folder::refresh_list(
                                     &access_token,
@@ -274,16 +271,12 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                             }
                         }
                         KeyCode::Char('h') => {
-                            if (OS == "macos" && key.modifiers == KeyModifiers::ALT)
-                                || (OS == "linux" && key.modifiers == KeyModifiers::CONTROL)
-                            {
+                            if key.modifiers == KeyModifiers::CONTROL {
                                 help = !help;
                             }
                         }
                         KeyCode::Char('x') => {
-                            if (OS == "macos" && key.modifiers == KeyModifiers::ALT)
-                                || (OS == "linux" && key.modifiers == KeyModifiers::CONTROL)
-                            {
+                            if key.modifiers == KeyModifiers::CONTROL {
                                 let selected_list = if flag == 0 { &folder } else { &new_folder };
                                 match index.selected() {
                                     Some(i) => {
@@ -445,16 +438,12 @@ pub fn run(access_token: String) -> Result<(), std::io::Error> {
                             parent_path = "root:".to_string();
                         }
                         KeyCode::Char('d') => {
-                            if (OS == "macos" && key.modifiers == KeyModifiers::ALT)
-                                || (OS == "linux" && key.modifiers == KeyModifiers::CONTROL)
-                            {
+                            if key.modifiers == KeyModifiers::CONTROL {
                                 pop = !pop;
                             }
                         }
                         KeyCode::Char('u') => {
-                            if (OS == "macos" && key.modifiers == KeyModifiers::ALT)
-                                || (OS == "linux" && key.modifiers == KeyModifiers::CONTROL)
-                            {
+                            if key.modifiers == KeyModifiers::CONTROL {
                                 let access_token_ = access_token.clone();
                                 let parent_id = parent_path.clone();
                                 if native_dialog {
